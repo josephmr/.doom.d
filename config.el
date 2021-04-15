@@ -69,4 +69,7 @@
   :config
   (lispyville-set-key-theme '(operators
                               c-w
-                              slurp/barf-cp)))
+                              additional-motions)))
+
+(map! "M-<" #'lispyville-<
+      "M->" #'lispyville->)
