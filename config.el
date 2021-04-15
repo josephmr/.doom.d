@@ -69,7 +69,13 @@
   :config
   (lispyville-set-key-theme '(operators
                               c-w
-                              additional-motions)))
+                              additional-motions))
+  (map! "M-<" #'lispyville-<
+        "M->" #'lispyville->))
 
-(map! "M-<" #'lispyville-<
-      "M->" #'lispyville->)
+(use-package! ox-hugo
+  :config
+  (setq org-hugo-date-format "%Y-%m-%d"))
+
+(add-hook! org-mode
+           (auto-fill-mode 1))
