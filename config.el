@@ -53,6 +53,8 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+(setq doom-localleader-key ",")
+
 (use-package! lsp
   :config
   (setq lsp-ui-sideline-enable nil))
@@ -60,3 +62,11 @@
 (use-package! clojure-mode
   :config
   (setq clojure-toplevel-inside-comment-form t))
+
+(use-package! lispyville
+  :init
+  (general-add-hook '(emacs-lisp-mode-hook lisp-mode-hook clojure-mode-hook clojurescript-mode-hook) #'lispyville-mode)
+  :config
+  (lispyville-set-key-theme '(operators
+                              c-w
+                              slurp/barf-cp)))
