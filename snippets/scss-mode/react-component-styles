@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: react-component-styles
+# key: rcs
+# --
+@import 'colors';
+@import 'text';
+@import 'mixins';
+@import 'consts';
+@import 'team_page_v2_mixins';
+@import 'animations';
+
+.${1:`(f-base (f-base (buffer-file-name)))`}-container {
+  $0
+}

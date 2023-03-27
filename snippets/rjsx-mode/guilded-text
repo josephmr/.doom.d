@@ -1,0 +1,11 @@
+# key: gtext
+# name: Guilded Text
+# --
+<GuildedText
+  type="subtext"
+  color="gilded"
+  weight="bold"
+  block
+  ellipsify>
+  $0
+</GuildedText>

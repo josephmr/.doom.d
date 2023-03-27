@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: test-context
+# key: tc
+# --
+const {$1} = testContext;$0

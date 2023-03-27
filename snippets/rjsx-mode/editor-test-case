@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: editor-test-case
+# key: etc
+# --
+{
+  description: '$1',
+  keys: ['$0'],
+},

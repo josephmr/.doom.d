@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: This Props
+# key: tp
+# --
+const {$1} = this.props;
+$0

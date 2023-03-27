@@ -1,0 +1,28 @@
+# -*- mode: snippet -*-
+# name: react-component
+# key: rc
+# --
+import classNames from 'classnames';
+import React from 'react';
+import CSSLoaderEnabled from 'CSSLoaderEnabled';
+import {observable, computed, action} from 'mobx';
+import {observer} from 'mobx-react';
+
+@observer
+@CSSLoaderEnabled({
+  name: '$1',
+  loader: () => require('$1.lazy.scss'),
+})
+class ${1:`(f-base (buffer-file-name))`} extends React.Component {
+  render() {
+    const {className} = this.props;
+
+    return (
+      <div className={classNames('$1-container', className)}>
+        $0
+      </div>
+    );
+  }
+}
+
+export default $1;

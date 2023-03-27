@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: React Class Name
+# key: cln
+# --
+
+className="`(f-base (buffer-file-name))`-$1" $0

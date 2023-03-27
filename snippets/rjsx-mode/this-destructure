@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: this-destructure
+# key: th
+# --
+const {$1} = this;$0

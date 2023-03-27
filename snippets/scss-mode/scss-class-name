@@ -1,0 +1,6 @@
+# key: cln
+# name: SCSS Class Name
+# --
+.`(string-replace ".lazy" "" (f-base (buffer-file-name)))`-$1 {
+  $0
+}

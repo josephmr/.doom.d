@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: @computed
+# key: comp
+# --
+@computed
+get $1() {
+  $0
+}

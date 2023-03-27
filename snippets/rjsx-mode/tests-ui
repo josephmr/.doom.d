@@ -1,0 +1,75 @@
+# key: testsui
+# name: tests-ui
+# --
+import TestBrowser from 'TestBrowser';
+import ContentTypes from 'ContentTypes';
+import {ChannelCreators} from 'teamChannelContentCreators';
+import {BaseUrl} from 'UITestUtils';
+import GuildedTeamService from 'GuildedTeamService';
+import assert from 'assert';
+import UITestSuite from 'UITestSuite';
+import GuildedTestUtils from 'GuildedTestUtils';
+import Promise from 'bluebird';
+
+let testContext = {};
+let browser = null;
+
+const refreshBrowserAndPage = async () => {
+  if (browser) {
+    await browser.close();
+    browser = null;
+  }
+
+  browser = await TestBrowser.Launch();
+  const page = await browser.newPage();
+
+  testContext.browser = browser;
+  testContext.page = page;
+};
+
+const ${1:`(f-base (buffer-file-name))`} = {
+  category: '$1 category',
+  name: '$1',
+  async before() {
+    testContext = {};
+    await refreshBrowserAndPage();
+
+    const {userInfo, teamId, userId, email, password} = await GuildedTestUtils.getUserAndTeam();
+    testContext.owner = userInfo;
+    testContext.userId = userId;
+    testContext.password = password;
+    testContext.email = email;
+    testContext.teamId = teamId;
+
+    const {team} = await GuildedTeamService.GetTeamById({teamId});
+    const {baseGroupId} = team;
+    testContext.baseGroupId = baseGroupId;
+    testContext.team = team;
+
+    const channel = await ChannelCreators[ContentTypes.Event]({
+      teamId,
+      groupId: testContext.baseGroupId,
+    });
+
+    testContext.channel = channel;
+    testContext.channelUrl = \`\${BaseUrl}\${channel.href}\`;
+
+    await testContext.page.logInViaRest({email, password});
+  },
+  tests: [
+    {
+      name: \`Can test some really important thing\`,
+      async action() {
+        const {page, channelUrl} = testContext;
+        await page.goto(channelUrl);
+
+        assert.strictEqual('something', true, 'message');
+        $0
+      },
+    },
+  ],
+};
+
+export default new UITestSuite([$1], '$1', () => ({
+  testContext,
+})).run;

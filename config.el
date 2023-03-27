@@ -41,7 +41,7 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
-
+(setq org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸" "✿"))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
@@ -77,3 +77,49 @@
 
 (after! vterm
   (evil-set-initial-state 'vterm-mode 'emacs))
+
+(after! git-link
+  (setq git-link-default-branch "master"))
+
+(setq browse-at-remote-add-line-number-if-no-region-selected t)
+
+(add-hook 'org-mode-hook 'turn-on-auto-fill)
+
+(defun my-import-js ()
+    (interactive)
+    (let ((symbol (thing-at-point 'symbol 'no-properties)))
+      (save-excursion
+        (with-no-warnings (goto-line 1))
+        (insert! ("import %s from '%s';\n" symbol symbol)))))
+
+(defun my-swap-styles ()
+  (interactive)
+  (let* ((f (buffer-file-name))
+        (is-native (s-contains? "native_v2" f))
+        (is-comp (s-contains? ".jsx" f))
+        (style (if is-native ".style.js" ".lazy.scss"))
+        (needle (if is-comp ".jsx" style))
+        (swap (if is-comp style ".jsx")))
+  (switch-to-buffer
+   (find-file-noselect
+    (string-replace needle swap f)))))
+
+(defun my-find-component-usages ()
+  (interactive)
+  (+vertico/project-search nil (format "<%s" (thing-at-point 'symbol 'no-properties))))
+
+(map! :leader
+      :map (rjsx-mode-map scss-mode-map)
+      "m s" #'my-swap-styles)
+
+(map! :leader
+      :map rjsx-mode-map
+      "m i" #'my-import-js)
+
+(map! :leader
+      :map rjsx-mode-map
+      "m c r" #'my-find-component-usages)
+
+(map! :leader
+      "p *" #'projectile-find-file-dwim)
+

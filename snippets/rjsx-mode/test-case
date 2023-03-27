@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: test-case
+# key: testc
+# --
+{
+  name: '$1',
+  async action() {
+    $0
+  }
+},
