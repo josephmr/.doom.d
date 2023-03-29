@@ -123,8 +123,7 @@
 (map! :leader
       "p *" #'projectile-find-file-dwim)
 
-(setq-hook! 'web-mode-hook +format-with-lsp nil)
 (after! web-mode
   :config
-  (set-formatter! 'prettier-svelte '("prettier" "--parser" "html")))
-(setq-hook! 'web-mode-hook +format-with 'prettier-svelte)
+  (setq tab-width 2)
+  (setq indent-tabs-mode nil))
