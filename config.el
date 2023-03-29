@@ -21,9 +21,9 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
-;;
+(setq doom-font (font-spec :family "Fira Code" :size 14 :weight 'semi-light)
+     doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
 ;; refresh your font settings. If Emacs still can't find your font, it likely
@@ -123,3 +123,8 @@
 (map! :leader
       "p *" #'projectile-find-file-dwim)
 
+(setq-hook! 'web-mode-hook +format-with-lsp nil)
+(after! web-mode
+  :config
+  (set-formatter! 'prettier-svelte '("prettier" "--parser" "html")))
+(setq-hook! 'web-mode-hook +format-with 'prettier-svelte)
