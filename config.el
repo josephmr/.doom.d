@@ -22,7 +22,7 @@
 ;; accept. For example:
 ;;
 (setq doom-font (font-spec :family "Fira Code" :size 14 :weight 'semi-light)
-     doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
 
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -86,44 +86,71 @@
 (add-hook 'org-mode-hook 'turn-on-auto-fill)
 
 (defun my-import-js ()
-    (interactive)
-    (let ((symbol (thing-at-point 'symbol 'no-properties)))
-      (save-excursion
-        (with-no-warnings (goto-line 1))
-        (insert! ("import %s from '%s';\n" symbol symbol)))))
+  (interactive)
+  (let ((symbol (thing-at-point 'symbol 'no-properties)))
+    (save-excursion
+      (with-no-warnings (goto-line 1))
+      (insert! ("import %s from '%s';\n" symbol symbol)))))
 
 (defun my-swap-styles ()
   (interactive)
   (let* ((f (buffer-file-name))
-        (is-native (s-contains? "native_v2" f))
-        (is-comp (s-contains? ".jsx" f))
-        (style (if is-native ".style.js" ".lazy.scss"))
-        (needle (if is-comp ".jsx" style))
-        (swap (if is-comp style ".jsx")))
-  (switch-to-buffer
-   (find-file-noselect
-    (string-replace needle swap f)))))
+         (is-native (s-contains? "native_v2" f))
+         (is-comp (s-contains? ".jsx" f))
+         (style (if is-native ".style.js" ".lazy.scss"))
+         (needle (if is-comp ".jsx" style))
+         (swap (if is-comp style ".jsx")))
+    (switch-to-buffer
+     (find-file-noselect
+      (string-replace needle swap f)))))
 
 (defun my-find-component-usages ()
   (interactive)
   (+vertico/project-search nil (format "<%s" (thing-at-point 'symbol 'no-properties))))
 
-(map! :leader
-      :map (rjsx-mode-map scss-mode-map)
-      "m s" #'my-swap-styles)
-
-(map! :leader
-      :map rjsx-mode-map
-      "m i" #'my-import-js)
-
-(map! :leader
-      :map rjsx-mode-map
-      "m c r" #'my-find-component-usages)
-
-(map! :leader
-      "p *" #'projectile-find-file-dwim)
-
 (after! web-mode
   :config
   (setq tab-width 2)
   (setq indent-tabs-mode nil))
+
+(defun org-copy-attachment-image ()
+  "Copy the contents of the attachment file at point to the clipboard for macOS."
+  (interactive)
+  (let* ((link-info (org-element-context))
+         (file-name (org-element-property :path link-info))
+         (file-id (org-entry-get-with-inheritance  "ID"))
+         (file-id-prefix (substring file-id 0 2))
+         (file-id-suffix (substring file-id 2))
+         (base-dir (expand-file-name (concat "~/org/.attach/" file-id-prefix "/" file-id-suffix))))
+    (when (and file-name (file-exists-p (concat base-dir "/" file-name)))
+      (let ((script (format "tell app \"Finder\" to set the clipboard to ( POSIX file \"%s\" )"
+                            (concat base-dir "/" file-name))))
+        (start-process "osascript" nil "osascript" "-e" script)
+        (message "Attachment contents copied to clipboard.")))))
+
+(map! :leader
+      :map org-mode-map
+      "m a y" #'org-copy-attachment-image)
+
+(defun work-project-hook ()
+  "Configuration specifically for Guilded"
+  (when (and (projectile-project-p)
+             (string= (projectile-project-name) "guilded"))
+    (setq +format-with-lsp nil)
+    (map! :leader
+          :map (rjsx-mode-map scss-mode-map)
+          "m s" #'my-swap-styles)
+
+    (map! :leader
+          :map rjsx-mode-map
+          "m i" #'my-import-js)
+
+    (map! :leader
+          :map rjsx-mode-map
+          "m c r" #'my-find-component-usages)
+
+    (map! :leader
+          "p *" #'projectile-find-file-dwim)
+    ))
+
+(add-hook 'projectile-after-switch-project-hook #'work-project-hook)
