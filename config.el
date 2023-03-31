@@ -139,14 +139,17 @@
     (setq +format-with-lsp nil)
     (map! :leader
           :map (rjsx-mode-map scss-mode-map)
+          :mode (rjsx-mode scss-mode)
           "m s" #'my-swap-styles)
 
     (map! :leader
           :map rjsx-mode-map
+          :mode rjsx-mode
           "m i" #'my-import-js)
 
     (map! :leader
           :map rjsx-mode-map
+          :mode rjsx-mode
           "m c r" #'my-find-component-usages)
 
     (map! :leader
