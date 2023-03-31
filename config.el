@@ -154,3 +154,23 @@
     ))
 
 (add-hook 'projectile-after-switch-project-hook #'work-project-hook)
+
+;; Fix a weird issue where ts-ls complains it "Could not find source file" when
+;; opening files. Found out that doing `:e!` fixed the issue, turned on lsp-logs
+;; to see that it sent a didChange notification. This just immediately sends a
+;; didChange notification which resolve the issue...gross.
+;;
+;; Restricted to just guilded project since its probably some weird guilded
+;; related thing.
+(defun my-lsp-hack-fix ()
+  "Send a `textDocument/didChange` LSP notification for the current buffer if the project is named 'guilded'."
+  (when (and (lsp-session)
+             buffer-file-name
+             (string= "guilded" (projectile-project-name)))
+    (lsp--send-notification
+     (lsp--make-notification "textDocument/didChange"
+                             `(:textDocument (:uri ,(buffer-file-name))
+                                             :contentChanges
+                                             [(:text ,(buffer-substring-no-properties (point-min) (point-max)))])))))
+
+(add-hook 'lsp-after-open-hook #'my-lsp-hack-fix)
