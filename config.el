@@ -75,6 +75,9 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+(setq scroll-margin 2
+      evil-want-fine-undo 't)
+
 (after! vterm
   (evil-set-initial-state 'vterm-mode 'emacs))
 
@@ -114,3 +117,27 @@
        (host-config-abs (expand-file-name host-config doom-user-dir)))
   (when (file-readable-p host-config-abs)
     (load-file host-config-abs)))
+
+;; Convert restclient response to json-mode when 200
+;;
+;;Could use restclient-content-type-modes to set to json-mode, but this stopped
+;; `:results pure` from removing the headers and did not pretty-print the json
+;; by default.
+;;
+;; TODO add a way to disable
+(defun restclient-my-json-when-ok ()
+  (when (equal major-mode 'js-mode)
+    (save-excursion
+      (goto-char (point-max))
+      (when (and (search-backward "200 OK" nil t)
+                 (search-backward "}" nil t))
+        (forward-char 1)
+        (delete-region (point) (point-max))
+        (newline)
+        (json-mode)
+        (goto-char (point-min))
+        (pulse-momentary-highlight-region (point-min) (point-max)
+                                          )))))
+
+(after! restclient
+  (add-hook 'restclient-response-loaded-hook #'restclient-my-json-when-ok))
