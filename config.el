@@ -85,29 +85,6 @@
 
 (add-hook 'org-mode-hook 'turn-on-auto-fill)
 
-(defun my-import-js ()
-  (interactive)
-  (let ((symbol (thing-at-point 'symbol 'no-properties)))
-    (save-excursion
-      (with-no-warnings (goto-line 1))
-      (insert! ("import %s from '%s';\n" symbol symbol)))))
-
-(defun my-swap-styles ()
-  (interactive)
-  (let* ((f (buffer-file-name))
-         (is-native (s-contains? "native_v2" f))
-         (is-comp (s-contains? ".jsx" f))
-         (style (if is-native ".style.js" ".lazy.scss"))
-         (needle (if is-comp ".jsx" style))
-         (swap (if is-comp style ".jsx")))
-    (switch-to-buffer
-     (find-file-noselect
-      (string-replace needle swap f)))))
-
-(defun my-find-component-usages ()
-  (interactive)
-  (+vertico/project-search nil (format "<%s" (thing-at-point 'symbol 'no-properties))))
-
 (after! web-mode
   :config
   (setq tab-width 2)
@@ -132,48 +109,7 @@
       :map org-mode-map
       "m a y" #'org-copy-attachment-image)
 
-(defun work-project-hook ()
-  "Configuration specifically for Guilded"
-  (when (and (projectile-project-p)
-             (string= (projectile-project-name) "guilded"))
-    (setq +format-with-lsp nil)
-    (map! :leader
-          :map (rjsx-mode-map scss-mode-map)
-          :mode (rjsx-mode scss-mode)
-          "m s" #'my-swap-styles)
-
-    (map! :leader
-          :map rjsx-mode-map
-          :mode rjsx-mode
-          "m i" #'my-import-js)
-
-    (map! :leader
-          :map rjsx-mode-map
-          :mode rjsx-mode
-          "m c r" #'my-find-component-usages)
-
-    (map! :leader
-          "p *" #'projectile-find-file-dwim)
-    ))
-
-(add-hook 'projectile-after-switch-project-hook #'work-project-hook)
-
-;; Fix a weird issue where ts-ls complains it "Could not find source file" when
-;; opening files. Found out that doing `:e!` fixed the issue, turned on lsp-logs
-;; to see that it sent a didChange notification. This just immediately sends a
-;; didChange notification which resolve the issue...gross.
-;;
-;; Restricted to just guilded project since its probably some weird guilded
-;; related thing.
-(defun my-lsp-hack-fix ()
-  "Send a `textDocument/didChange` LSP notification for the current buffer if the project is named 'guilded'."
-  (when (and (lsp-session)
-             buffer-file-name
-             (string= "guilded" (projectile-project-name)))
-    (lsp--send-notification
-     (lsp--make-notification "textDocument/didChange"
-                             `(:textDocument (:uri ,(buffer-file-name))
-                                             :contentChanges
-                                             [(:text ,(buffer-substring-no-properties (point-min) (point-max)))])))))
-
-(add-hook 'lsp-after-open-hook #'my-lsp-hack-fix)
+(let* ((host-config (concat (system-name) ".el"))
+       (host-config-abs (expand-file-name host-config doom-user-dir)))
+  (when (file-readable-p host-config-abs)
+    (load-file host-config-abs)))
