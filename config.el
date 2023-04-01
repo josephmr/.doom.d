@@ -87,6 +87,7 @@
 
 (after! web-mode
   :config
+  (setq web-mode-code-indent-offset 2)
   (setq tab-width 2)
   (setq indent-tabs-mode nil))
 
