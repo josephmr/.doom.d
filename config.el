@@ -88,11 +88,19 @@
 
 (add-hook 'org-mode-hook 'turn-on-auto-fill)
 
+(setq-default tab-width 2
+              indent-tabs-mode nil)
+
+(after! typescript-mode
+  :config
+  (setq typescript-indent-level 2))
+
 (after! web-mode
   :config
   (setq web-mode-code-indent-offset 2)
-  (setq tab-width 2)
-  (setq indent-tabs-mode nil))
+  (setq web-mode-script-padding 2)
+  (setq web-mode-style-padding 2)
+  (setq web-mode-block-padding 2))
 
 (defun org-copy-attachment-image ()
   "Copy the contents of the attachment file at point to the clipboard for macOS."
